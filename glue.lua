@@ -260,6 +260,29 @@ function glue.indexof(v, t, eq, i, j)
 	end
 end
 
+--- Return the index of a table/array if value exists
+---@param array table
+---@param value any
+function glue.arrayhas(array, value)
+	for k,v in pairs(array) do
+		if (v == value) then return k end
+	end
+	return nil
+end
+
+--- Get the new values of an array
+---@param oldarray table
+---@param newarray table
+function glue.arraynv(oldarray, newarray)
+	local newvalues = {}
+	for k,v in pairs(newarray) do
+		if (not glue.arrayhas(oldarray, v)) then
+			glue.append(newvalues, v)
+		end
+	end
+	return newvalues
+end
+
 --reverse elements of a list in place. works with ffi arrays too given i and j.
 function glue.reverse(t, i, j)
 	i = i or 1
