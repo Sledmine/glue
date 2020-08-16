@@ -1,8 +1,7 @@
 
---Lua extended vocabulary of basic tools.
---Written by Cosmin Apreutesei. Public domain.
-
-if not ... then require'glue_test'; return end
+-- Lua extended vocabulary of basic tools.
+-- Written by Cosmin Apreutesei. Public domain.
+-- Modifications by Sled
 
 local glue = {}
 
@@ -269,6 +268,66 @@ function glue.reverse(t, i, j)
 		t[i+k-1], t[j-k] = t[j-k], t[i+k-1]
 	end
 	return t
+end
+
+--- Get all the values of a key recursively
+---@param t table
+---@param dp any
+function glue.childsbyparent(t, dp)
+    for p,ch in pairs(t) do
+		if (p == dp) then
+			return ch
+		end
+		if (ch) then
+			local found = glue.childsbyparent(ch, dp)
+			if (found) then
+				return found
+			end
+		end
+    end
+    return nil
+end
+
+-- Get the key of a value recursively
+---@param t table
+---@param dp any
+function glue.parentbychild(t, dp)
+    for p,ch in pairs(t) do
+		if (ch[dp]) then
+			return p
+		end
+		if (ch) then
+			local found = glue.parentbychild(ch, dp)
+			if (found) then
+				return found
+			end
+		end
+    end
+    return nil
+end
+
+--- Split a list/array into small parts of given size
+---@param list table
+---@param chunks number
+function glue.chunks(list, chunks)
+	local chunkcounter = 0
+	local chunk = {}
+	local chunklist = {}
+	-- Append chunks to the list in the specified amount of elements
+	for k,v in pairs(list) do
+		if (chunkcounter == chunks) then
+			glue.append(chunklist, chunk)
+			chunk = {}
+			chunkcounter = 0
+		end
+		glue.append(chunk, v)
+		chunkcounter = chunkcounter + 1
+	end
+	-- If there was a chunk that was not completed append it
+	if (chunkcounter ~= 0) then
+		glue.append(chunklist, chunk)
+	end
+	return chunklist
 end
 
 --binary search for an insert position that keeps the table sorted.
