@@ -1,5 +1,5 @@
 
-# Glue - Collection of standard/useful functions for Lua
+# Glue - Collection of useful functions for Lua
 
 This forked repository is mainly created for Halo Custom Edition scripting purposes but includes some generic functions and it will work as a normal standalone library if needed.
 
