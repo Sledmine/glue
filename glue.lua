@@ -363,6 +363,18 @@ end
 --string submodule. has its own namespace which can be merged with _G.string.
 glue.string = {}
 
+--- Split a string list/array given a separator string
+function glue.string.split(s, sep)
+    if (sep == nil or sep == '') then return 1 end
+    local position, array = 0, {}
+    for st, sp in function() return string.find(s, sep, position, true) end do
+        table.insert(array, string.sub(s, position, st-1))
+        position = sp + 1
+    end
+    table.insert(array, string.sub(s, position))
+    return array
+end
+
 --split a string by a separator that can be a pattern or a plain string.
 --return a stateless iterator for the pieces.
 local function iterate_once(s, s1)
