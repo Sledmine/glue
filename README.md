@@ -71,7 +71,7 @@ Switch table keys with values.
 
 Extract a rfc850 date from a string. Use lookup tables for weekdays and months.
 
-~~~{.lua}
+```lua
 local weekdays = glue.index{'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'}
 local months = glue.index{'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'}
 
@@ -89,7 +89,7 @@ end
 for k,v in pairs(rfc850date'Sunday, 06-Nov-94 08:49:37 GMT') do
    print(k,v)
 end
-~~~
+```
 
 Output
 
@@ -105,7 +105,7 @@ Output
 Copy-paste a bunch of defines from a C header file and create an inverse
 lookup table to find the name of a value at runtime.
 
-~~~{.lua}
+```lua
 --from ibase.h
 info_end_codes = {
    isc_info_end             = 1,  --normal ending
@@ -116,7 +116,7 @@ info_end_codes = {
 }
 info_end_code_names = glue.index(info_end_codes)
 print(info_end_code_names[64])
-~~~
+```
 
 Output
 
@@ -158,23 +158,23 @@ Update a table with elements of other tables, overwriting any existing keys.
 Create an options table by merging the options received as an argument
 (if any) over the default options.
 
-~~~{.lua}
+```lua
 function f(opts)
    opts = glue.update({}, default_opts, opts)
 end
-~~~
+```
 
 Shallow table copy:
 
-~~~{.lua}
+```lua
 t = glue.update({}, t)
-~~~
+```
 
 Static multiple inheritance:
 
-~~~{.lua}
+```lua
 C = glue.update({}, A, B)
-~~~
+```
 
 ------------------------------------------------------------------------------
 
@@ -188,9 +188,9 @@ Update a table with elements of other tables skipping on any existing keys.
 
 Normalize a data object with default values:
 
-~~~{.lua}
+```lua
 glue.merge(t, defaults)
-~~~
+```
 
 ------------------------------------------------------------------------------
 
@@ -199,6 +199,13 @@ glue.merge(t, defaults)
 Idiom for `t[k1][k2] = v` with auto-creating of `t[k1]` if not present.
 
 ------------------------------------------------------------------------------
+
+### `glue.deepcopy(t)`
+
+Returns a deep copy of a given table, it can be used to remove value references.
+
+------------------------------------------------------------------------------
+
 
 ## Arrays
 
@@ -318,7 +325,7 @@ the elements.
 
 #### Examples
 
-~~~{.lua}
+```lua
 for s in glue.gsplit('Spam eggs spam spam and ham', '%s*spam%s*') do
    print('"'..s..'"')
 end
@@ -326,7 +333,7 @@ end
 > "Spam eggs"
 > ""
 > "and ham"
-~~~
+```
 
 ------------------------------------------------------------------------------
 
@@ -418,14 +425,14 @@ Iterate an iterator and collect its i'th return value of every step into an arra
 
 Implementation of `keys()` and `values()` in terms of `collect()`
 
-~~~{.lua}
+```lua
 keys = function(t) return glue.collect(pairs(t)) end
 values = function(t) return glue.collect(2,pairs(t)) end
-~~~
+```
 
 Collecting string matches:
 
-~~~{.lua}
+```lua
 s = 'a,b,c,'
 t = glue.collect(s:gmatch'(.-),')
 for i=1,#t do print(t[i]) end
@@ -433,7 +440,7 @@ for i=1,#t do print(t[i]) end
 > a
 > b
 > c
-~~~
+```
 
 ------------------------------------------------------------------------------
 
@@ -447,14 +454,14 @@ The identity function. Does nothing, returns back all arguments.
 
 Default value for optional callback arguments:
 
-~~~{.lua}
+```lua
 function urlopen(url, callback, errback)
    callback = callback or glue.pass
    errback = errback or glue.pass
    ...
    callback()
 end
-~~~
+```
 
 ### `glue.noop()`
 
@@ -514,7 +521,7 @@ then make it one.
 
 Logging mixin:
 
-~~~{.lua}
+```lua
 AbstractLogger = glue.inherit({}, function(t,k) error('abstract '..k) end)
 NullLogger = glue.inherit({log = function() end}, AbstractLogger)
 PrintLogger = glue.inherit({log = function(self,...) print(...) end}, AbstractLogger)
@@ -531,14 +538,14 @@ LoggedRequest = glue.inherit({log = PrintLogger.log}, HttpRequest)
 LoggedRequest:perform'http://lua.org/'
 
 > Requesting	http://lua.org/	...
-~~~
+```
 
 Defining a module in Lua 5.2
 
-~~~{.lua}
+```lua
 _ENV = glue.inherit({},_G)
 ...
-~~~
+```
 
 To get the effect of static (single or multiple) inheritance, use `glue.update`.
 
@@ -783,9 +790,9 @@ args when a message is given and the assertion is true. So the pattern
 
 #### Example
 
-~~~{.lua}
+```lua
 glue.assert(depth <= maxdepth, 'maximum depth %d exceeded', maxdepth)
-~~~
+```
 
 ------------------------------------------------------------------------------
 
@@ -798,7 +805,7 @@ to coding explicit conditional flows to cover exceptional cases.
 Use this function to convert error-raising functions to nil,err-returning
 functions:
 
-~~~{.lua}
+```lua
 protected_function = glue.protect(function()
 	...
 	assert(...)
@@ -809,7 +816,7 @@ protected_function = glue.protect(function()
 end)
 
 local ret, err = protected_function()
-~~~
+```
 
 ------------------------------------------------------------------------------
 
@@ -831,7 +838,7 @@ returns nil,error when errors occur while the second re-raises the error.
 
 #### Example
 
-~~~{.lua}
+```lua
 local result = glue.fpcall(function(finally, except, ...)
   local temporary_resource = acquire_resource()
   finally(function() temporary_resource:free() end)
@@ -841,7 +848,7 @@ local result = glue.fpcall(function(finally, except, ...)
   ... code that might break ...
   return final_resource
 end, ...)
-~~~
+```
 
 ------------------------------------------------------------------------------
 
@@ -900,7 +907,7 @@ implementation to be refactored at a later time without changing the API.
 
 **main module (foo.lua):**
 
-~~~{.lua}
+```lua
 local function bar() --function implemented in the main module
   ...
 end
@@ -912,25 +919,25 @@ return glue.autoload({
 }, {
    baz = 'foo_extra', --autoloaded function, implemented in module foo_extra
 })
-~~~
+```
 
 **submodule (foo_extra.lua):**
 
-~~~{.lua}
+```lua
 local foo = require'foo'
 
 function foo.baz(...)
   ...
 end
-~~~
+```
 
 **in usage:**
 
-~~~{.lua}
+```lua
 local foo = require'foo'
 
 foo.baz(...) -- foo_extra was now loaded automatically
-~~~
+```
 
 ------------------------------------------------------------------------------
 
@@ -943,9 +950,9 @@ For executables created with [bundle], this is the executable's directory.
 
 #### Example
 
-~~~{.lua}
+```lua
 local foobar = glue.readfile(glue.bin .. '/' .. file_near_this_script)
-~~~
+```
 
 #### Caveats
 
@@ -977,12 +984,12 @@ meaning as with `glue.luapath`.
 
 #### Example
 
-~~~{.lua}
+```lua
 glue.luapath(glue.bin)
 glue.cpath(glue.bin)
 
 require'foo' --looking for `foo` in the same directory as the running script first
-~~~
+```
 
 ------------------------------------------------------------------------------
 
