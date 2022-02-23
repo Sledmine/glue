@@ -57,9 +57,12 @@ end
 
 --tables ---------------------------------------------------------------------
 
---count the keys in a table with an optional upper limit.
+---Count the keys in a table with an optional upper limit
+---@param t table
+---@param maxn integer
+---@return integer
 function glue.count(t, maxn)
-	local maxn = maxn or 1/0
+	local maxn = maxn or (1/0)
 	local n = 0
 	for _ in pairs(t) do
 		n = n + 1
@@ -68,15 +71,22 @@ function glue.count(t, maxn)
 	return n
 end
 
---reverse keys with values.
+---Reverse keys with values
+---@param t table<any, any>
+---@return table
 function glue.index(t)
 	local dt={}
 	for k,v in pairs(t) do dt[v]=k end
 	return dt
 end
 
---put keys in a list, optionally sorted.
+
 local function desc_cmp(a, b) return a > b end
+
+---Put keys in a list, optionally sorted
+---@param t table
+---@param cmp boolean
+---@return string[] | integer[] | any[]
 function glue.keys(t, cmp)
 	local dt={}
 	for k in pairs(t) do
@@ -92,7 +102,10 @@ function glue.keys(t, cmp)
 	return dt
 end
 
---stateless pairs() that iterate elements in key order.
+---Stateless pairs() that iterate elements in key order
+---@param t table
+---@param cmp boolean
+---@return function
 function glue.sortedpairs(t, cmp)
 	local kt = glue.keys(t, cmp or true)
 	local i = 0
@@ -102,7 +115,10 @@ function glue.sortedpairs(t, cmp)
 	end
 end
 
---update a table with the contents of other table(s).
+---Update a table with the contents of other table(s)
+---@param dt table
+---@param ... any
+---@return table
 function glue.update(dt,...)
 	for i=1,select('#',...) do
 		local t=select(i,...)
@@ -113,7 +129,10 @@ function glue.update(dt,...)
 	return dt
 end
 
---add the contents of other table(s) without overwrite.
+---Add the contents of other table(s) without overwriting
+---@param dt table
+---@param ... any
+---@return table
 function glue.merge(dt,...)
 	for i=1,select('#',...) do
 		local t=select(i,...)
@@ -126,6 +145,9 @@ function glue.merge(dt,...)
 	return dt
 end
 
+---Copy the content of a table and create a new one without references
+---@param orig table
+---@return table
 function glue.deepcopy(orig)
 	local orig_type = type(orig)
     local copy
@@ -141,8 +163,12 @@ function glue.deepcopy(orig)
     return copy
 end
 
---get the value of a table field, and if the field is not present in the
---table, create it as an empty table, and return it.
+---Get the value of a table field, and if the field is not present in the\
+---table, create it as an empty table, and return it
+---@param t table
+---@param k any
+---@param v0 any
+---@return any
 function glue.attr(t, k, v0)
 	local v = t[k]
 	if v == nil then
@@ -256,7 +282,13 @@ end
 
 --arrays ---------------------------------------------------------------------
 
---scan list for value. works with ffi arrays too given i and j.
+---Scan list for value, works with ffi arrays too given i and j
+---@param v any
+---@param t any[]
+---@param eq fun(key:any, value:any)
+---@param i integer
+---@param j integer
+---@return integer
 function glue.indexof(v, t, eq, i, j)
 	i = i or 1
 	j = j or #t
@@ -275,8 +307,8 @@ function glue.indexof(v, t, eq, i, j)
 	end
 end
 
---- Return the index of a table/array if value exists
----@param array table
+---Return the index of a table/array if value exists
+---@param array any[]
 ---@param value any
 function glue.arrayhas(array, value)
 	for k,v in pairs(array) do
@@ -285,7 +317,7 @@ function glue.arrayhas(array, value)
 	return nil
 end
 
---- Get the new values of an array
+---Get new values of an array compared to another
 ---@param oldarray table
 ---@param newarray table
 function glue.arraynv(oldarray, newarray)
@@ -298,7 +330,11 @@ function glue.arraynv(oldarray, newarray)
 	return newvalues
 end
 
---reverse elements of a list in place. works with ffi arrays too given i and j.
+---Reverse elements of a list in place, works with ffi arrays too given i and j
+---@param t any[]
+---@param i integer
+---@param j integer
+---@return any[]
 function glue.reverse(t, i, j)
 	i = i or 1
 	j = (j or #t) + 1
@@ -345,7 +381,7 @@ function glue.parentbychild(t, dp)
 end
 
 --- Split a list/array into small parts of given size
----@param list table
+---@param list any[]
 ---@param chunks number
 function glue.chunks(list, chunks)
 	local chunkcounter = 0
@@ -973,8 +1009,11 @@ local function unprotect(ok, result, ...)
 	return result, ...
 end
 
---wrap a function that raises errors on failure into a function that follows
---the Lua convention of returning nil,err on failure.
+
+---Wrap a function that raises errors on failure into a function that follows\
+---the Lua convention of returning nil, err on failure
+---@param func function
+---@return function
 function glue.protect(func)
 	return function(...)
 		return unprotect(pcall(func, ...))
