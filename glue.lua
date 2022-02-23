@@ -7,6 +7,7 @@ local glue = {}
 
 local min, max, floor, ceil, log =
 	math.min, math.max, math.floor, math.ceil, math.log
+---@diagnostic disable-next-line: deprecated
 local select, unpack, pairs, rawget = select, unpack, pairs, rawget
 
 --math -----------------------------------------------------------------------
@@ -584,7 +585,7 @@ end
 
 --no-op filters.
 function glue.pass(...) return ... end
-function glue.noop() return end
+function glue.noop() end
 
 --memoize for 0, 1, 2-arg and vararg and 1 retval functions.
 local function memoize0(fn) --for strict no-arg functions
@@ -1086,6 +1087,7 @@ function glue.module(name, parent)
 		package.loaded[name] = M
 		P[name] = M
 	end
+---@diagnostic disable-next-line: deprecated
 	setfenv(2, P)
 	return M, P
 end
