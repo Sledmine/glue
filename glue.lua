@@ -86,7 +86,7 @@ local function desc_cmp(a, b) return a > b end
 
 ---Put keys in a list, optionally sorted
 ---@param t table
----@param cmp boolean
+---@param cmp? boolean | '"asc"' | '"desc"'
 ---@return string[] | integer[] | any[]
 function glue.keys(t, cmp)
 	local dt={}
@@ -105,7 +105,7 @@ end
 
 ---Stateless pairs() that iterate elements in key order
 ---@param t table
----@param cmp boolean
+---@param cmp? boolean | '"asc"' | '"desc"'
 ---@return function
 function glue.sortedpairs(t, cmp)
 	local kt = glue.keys(t, cmp or true)
@@ -319,8 +319,8 @@ function glue.arrayhas(array, value)
 end
 
 ---Get new values of an array compared to another
----@param oldarray table
----@param newarray table
+---@param oldarray any[]
+---@param newarray any[]
 function glue.arraynv(oldarray, newarray)
 	local newvalues = {}
 	for k,v in pairs(newarray) do
@@ -479,7 +479,10 @@ function glue.string.gsplit(s, sep, start, plain)
 	end
 end
 
---split a string into lines, optionally including the line terminator.
+---Split a string into lines, optionally including the line terminator
+---@param s string
+---@param opt any | '"*L"'
+---@return function
 function glue.lines(s, opt)
 	local term = opt == '*L'
 	local patt = term and '([^\r\n]*()\r?\n?())' or '([^\r\n]*)()\r?\n?()'
@@ -495,7 +498,9 @@ function glue.lines(s, opt)
 	end
 end
 
---string trim12 from lua wiki.
+---String trim12, source: http://lua-users.org/wiki/StringTrim
+---@param s any
+---@return string
 function glue.string.trim(s)
 	local from = s:match('^%s*()')
 	return from > #s and '' or s:match('.*%S', from)
@@ -505,6 +510,10 @@ end
 local function format_ci_pat(c)
 	return ('[%s%s]'):format(c:lower(), c:upper())
 end
+---Escape a string to match it inside a lua pattern
+---@param s string
+---@param mode? any
+---@return any
 function glue.string.esc(s, mode) --escape is a reserved word in Terra
 	s = s:gsub('%%','%%%%'):gsub('%z','%%z')
 		:gsub('([%^%$%(%)%.%[%]%*%+%-%?])', '%%%1')
@@ -512,7 +521,10 @@ function glue.string.esc(s, mode) --escape is a reserved word in Terra
 	return s
 end
 
---string or number to hex.
+---Convert string or number to hex
+---@param s string
+---@param upper? boolean
+---@return string
 function glue.string.tohex(s, upper)
 	if type(s) == 'number' then
 		return (upper and '%08.8X' or '%08.8x'):format(s)
