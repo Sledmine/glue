@@ -1311,6 +1311,7 @@ function glue.freelist(create, destroy)
         return e or create()
     end
     local function free(e)
+    ---@diagnostic disable-next-line: redundant-parameter
         destroy(e)
         n = n + 1
         t[n] = e
