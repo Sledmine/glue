@@ -88,7 +88,8 @@ end
 
 ---Put keys in a list, optionally sorted
 ---@param t table
----@param cmp? boolean | '"asc"' | '"desc"'
+---@generic T : any
+---@param cmp? boolean | '"asc"' | '"desc"' | fun(a: T, b: T):boolean?
 ---@return string[] | integer[] | any[]
 function glue.keys(t, cmp)
     local dt = {}
@@ -100,6 +101,7 @@ function glue.keys(t, cmp)
     elseif cmp == "desc" then
         table.sort(dt, desc_cmp)
     elseif cmp then
+        ---@diagnostic disable-next-line: param-type-mismatch
         table.sort(dt, cmp)
     end
     return dt
@@ -107,7 +109,8 @@ end
 
 ---Stateless pairs() that iterate elements in key order
 ---@param t table
----@param cmp? boolean | '"asc"' | '"desc"'
+---@generic T : any
+---@param cmp? boolean | '"asc"' | '"desc"' | fun(a: T, b: T):boolean?
 ---@return function
 function glue.sortedpairs(t, cmp)
     local kt = glue.keys(t, cmp or true)
@@ -297,7 +300,7 @@ end
 ---@param eq fun(key:any, value:any)
 ---@param i integer
 ---@param j integer
----@return integer
+---@return integer?
 function glue.indexof(v, t, eq, i, j)
     i = i or 1
     j = j or #t
@@ -850,7 +853,9 @@ end
 
 -- i/o ------------------------------------------------------------------------
 
--- check if a file exists and can be opened for reading or writing.
+---Check if a file exists and can be opened for reading or writing
+---@param name string File name path
+---@param mode string Optional file mode, "rb" by default
 function glue.canopen(name, mode)
     local f = io.open(name, mode or "rb")
     if f then
@@ -859,7 +864,11 @@ function glue.canopen(name, mode)
     return f ~= nil and name or nil
 end
 
--- read a file into a string (in binary mode by default).
+---Read a file into a string (in binary mode by default)
+---@param name string File name path
+---@param mode string File mode, "rb" by default
+---@param open? function
+---@return string | nil, string?
 function glue.readfile(name, mode, open)
     open = open or io.open
     local f, err = open(name, mode == "t" and "r" or "rb")
@@ -874,7 +883,11 @@ function glue.readfile(name, mode, open)
     return s
 end
 
--- read the output of a command into a string.
+---Read the output of a command into a string
+---@param cmd string Command to run
+---@param mode string File mode, "rb" by default
+---@param open? function
+---@return string | nil, string?
 function glue.readpipe(cmd, mode, open)
     return glue.readfile(cmd, mode, open or io.popen)
 end
